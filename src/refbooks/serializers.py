@@ -19,3 +19,11 @@ class VersionSerializer(serializers.ModelSerializer):
     class Meta:
         model = Version
         fields = "__all__"
+
+
+class RefbooksResponseSerializer(serializers.Serializer):
+    refbooks = RefbookSerializer(many=True)
+
+
+class ElementsResponseSerializer(serializers.Serializer):
+    elements = ElementSerializer(many=True)
