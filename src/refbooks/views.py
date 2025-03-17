@@ -1,6 +1,3 @@
-from datetime import date
-
-from django.shortcuts import get_object_or_404
 from django.utils.decorators import method_decorator
 from drf_yasg.utils import swagger_auto_schema
 from rest_framework.viewsets import ReadOnlyModelViewSet
@@ -11,6 +8,7 @@ from .descriptions import (
     elements_description,
     refbooks_description,
 )
+from .methods import ElementMethods, VersionMethods
 from .models import Refbook
 from .openapi_settings import (
     code_param,
@@ -43,23 +41,8 @@ class RefbooksViewSet(ReadOnlyModelViewSet):
     def get_queryset(self):
         date_papam = self.request.query_params.get("date")
         if date_papam:
-            return self.queryset.filter(versions__start_date__lte=date_papam)
+            return self.queryset.filter(versions__start_date__lte=date_papam).distinct()
         return self.queryset
-
-
-class VersionsViewSet(ReadOnlyModelViewSet):
-    def get_version(self):
-        refbook = get_object_or_404(
-            Refbook, pk=self.kwargs.get("id") or self.kwargs.get("pk")
-        )
-        version_param = self.request.query_params.get("version")
-        if not version_param:
-            return (
-                refbook.versions.filter(start_date__lte=date.today())
-                .order_by("-start_date")
-                .first()
-            )
-        return refbook.versions.filter(version=version_param).first()
 
 
 @method_decorator(
@@ -71,11 +54,11 @@ class VersionsViewSet(ReadOnlyModelViewSet):
     ),
 )
 @response_format
-class ElementViewSet(VersionsViewSet, ReadOnlyModelViewSet):
+class ElementViewSet(ReadOnlyModelViewSet):
     serializer_class = ElementSerializer
 
     def get_queryset(self):
-        version = self.get_version()
+        version = VersionMethods(self.request, self.args, self.kwargs).get_version()
         return version.elements
 
 
@@ -87,14 +70,11 @@ class ElementViewSet(VersionsViewSet, ReadOnlyModelViewSet):
         responses={200: elements_serializer_response},
     ),
 )
-class CheckElementViewSet(VersionsViewSet, ReadOnlyModelViewSet):
+class CheckElementViewSet(ReadOnlyModelViewSet):
     serializer_class = ElementSerializer
 
     def get_queryset(self):
-        version = self.get_version()
-        code = self.request.query_params.get("code")
-        value = self.request.query_params.get("value")
-        return version.elements.filter(code=code, value=value)
+        return ElementMethods(self.request, self.args, self.kwargs).get_element()
 
     def get_object(self):
         return self.get_queryset().first()

@@ -19,7 +19,9 @@ date_param = openapi.Parameter(
     required=False,
     description=date_param_description,
     type=openapi.TYPE_STRING,
+    format=openapi.FORMAT_DATE,
     default="2020-01-01",
+    pattern=r"\d{4}-\d{2}-\d{2}",
 )
 refbooks_response = openapi.Response(
     refbooks_response_description, RefbooksResponseSerializer

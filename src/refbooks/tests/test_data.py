@@ -1,0 +1,15 @@
+current_vertion_code = "3"
+current_vertion_value = "Хирург"
+existing_code = "1"
+existing_value = "Врач-терапевт"
+not_existing_value = "non_existing_value"
+all_refbooks = 2
+existing_refbook = "1"
+not_existing_refbook = "5"
+existing_version = "0.2"
+not_existing_version = "5"
+current_version_elements = 3
+existing_version_elements = 2
+date_gte = "2025-03-17"
+date_lt_one = "2025-03-16"
+date_lt_all = "2022-01-01"
