@@ -9,7 +9,7 @@ from .descriptions import (
     refbooks_description,
 )
 from .methods import ElementMethods, VersionMethods
-from .models import Refbook
+from .models import Element, Refbook
 from .openapi_settings import (
     code_param,
     date_param,
@@ -72,9 +72,7 @@ class ElementViewSet(ReadOnlyModelViewSet):
 )
 class CheckElementViewSet(ReadOnlyModelViewSet):
     serializer_class = ElementSerializer
-
-    def get_queryset(self):
-        return ElementMethods(self.request, self.args, self.kwargs).get_element()
+    queryset = Element.objects.all()
 
     def get_object(self):
-        return self.get_queryset().first()
+        return ElementMethods(self.request, self.args, self.kwargs).get_element()

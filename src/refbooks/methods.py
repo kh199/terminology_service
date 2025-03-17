@@ -43,7 +43,7 @@ class ElementMethods(VersionMethods):
         query_params = self.request.query_params
         element = version.elements.filter(
             code=query_params.get("code"), value=query_params.get("value")
-        )
+        ).first()
         if element:
             return element
         raise ElementDoesNotExist
